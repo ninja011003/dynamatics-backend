@@ -1,0 +1,11 @@
+{"id": 1, "department": "Engineering", "budget": 100000}
+{"id": 2, "department": "Marketing", "budget": 80000}
+{"id": 3, "department": "Sales", "budget": 90000}
+{"id": 4, "department": "HR", "budget": 60000}
+{"id": 5, "department": "Finance", "budget": 70000}
+{"id": 6, "department": "Operations", "budget": 85000}
+{"id": 7, "department": "IT", "budget": 95000}
+{"id": 8, "department": "Legal", "budget": 65000}
+{"id": 9, "department": "Support", "budget": 55000}
+{"id": 10, "department": "Research", "budget": 110000}
+
