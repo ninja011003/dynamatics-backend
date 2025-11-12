@@ -25,10 +25,8 @@ class Filter:
         self.field = None
     
 
-    
+    #TODO add multiple conditions
     def run(self,condition,value,field):
-        if self.is_completed:
-            return self.output
         
         self.condition = condition
         self.value = value
@@ -40,10 +38,9 @@ class Filter:
         
         mask = filter_func(self.input[self.field],self.value)
         self.output = self.input[mask].reset_index(drop=True)
-        self.is_completed = True
         return self.output
     
 if __name__ == "__main__":
-    filter = Filter(pd.DataFrame({"A": [1,2,3,5,3,24,7,8,]}))
-    filter.run("gte",3,"A")
+    filter = Filter(pd.DataFrame({"A": [1,2,3,5,3,24,7,8,], "B": [1,2,3,4,5,6,7,8,]}))
+    filter.run("gte",8,"A")
     print(filter.output)

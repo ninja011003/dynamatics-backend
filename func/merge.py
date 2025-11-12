@@ -25,4 +25,4 @@ class Merge:
 if __name__ == "__main__":
     merge = Merge()
     merge.merge(pd.DataFrame({"A": [1,2,3]}), pd.DataFrame({"B": [4,5,6]}))
-    print(merge.output)
+    print(merge.output) 

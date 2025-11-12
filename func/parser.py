@@ -5,13 +5,13 @@ from collections import defaultdict, deque
 
 class Parser:
     def __init__(self):
-        self.nodes =[]
+        self.nodes ={}
         self.graph = defaultdict(list) # node_id -> [node_id]
         self.exe_order = []
     
-    def parse(self,flow):
-        flow = json.load(flow)
-        self.nodes = flow["nodes"]
+    def parse(self,flow:Dict):
+        for node in flow["nodes"]:
+            self.nodes[node["id"]] = node
         edges = flow["edges"]
         for edge in edges :
             self.graph[edge["source"]].append(edge["target"])
@@ -44,5 +44,5 @@ class Parser:
         
 if __name__ == "__main__":
     parser = Parser()
-    parser.parse(open("sample_input.json","r"))
+    parser.parse(open("sample_input2.json","r"))
     print(parser.topo_sort())

@@ -1,0 +1,334 @@
+{
+    "nodes": [
+        {
+            "id": "filter-1762946079773",
+            "type": "filter",
+            "position": {
+                "x": 27.3608990178491,
+                "y": 407.185694178849
+            },
+            "data": {
+                "fields": [
+                    "id",
+                    "name",
+                    "age",
+                    "country"
+                ],
+                "fieldTypes": {
+                    "id": "number",
+                    "name": "string",
+                    "age": "number",
+                    "country": "string"
+                }
+            },
+            "measured": {
+                "width": 200,
+                "height": 153
+            },
+            "selected": false,
+            "dragging": false
+        },
+        {
+            "id": "filter-1762946086306",
+            "type": "filter",
+            "position": {
+                "x": 31.044052605849288,
+                "y": 599.7074766961241
+            },
+            "data": {
+                "fields": [
+                    "id",
+                    "name",
+                    "age",
+                    "country"
+                ],
+                "fieldTypes": {
+                    "id": "number",
+                    "name": "string",
+                    "age": "number",
+                    "country": "string"
+                }
+            },
+            "measured": {
+                "width": 200,
+                "height": 153
+            },
+            "selected": false,
+            "dragging": false
+        },
+        {
+            "id": "sort-1762946087289",
+            "type": "sort",
+            "position": {
+                "x": 308.4575055365043,
+                "y": 315.7099514939044
+            },
+            "data": {
+                "fields": [
+                    "id",
+                    "name",
+                    "age",
+                    "country"
+                ],
+                "fieldTypes": {
+                    "id": "number",
+                    "name": "string",
+                    "age": "number",
+                    "country": "string"
+                }
+            },
+            "measured": {
+                "width": 150,
+                "height": 101
+            },
+            "selected": false,
+            "dragging": false
+        },
+        {
+            "id": "dataSource-1762946089038",
+            "type": "dataSource",
+            "position": {
+                "x": -290.88828436813463,
+                "y": 470.1194197870712
+            },
+            "data": {
+                "fields": [
+                    "id",
+                    "name",
+                    "age",
+                    "country"
+                ]
+            },
+            "measured": {
+                "width": 178,
+                "height": 141
+            },
+            "selected": false,
+            "dragging": false
+        },
+        {
+            "id": "group-1762946106372",
+            "type": "group",
+            "position": {
+                "x": 569.8501865349256,
+                "y": 248.55997342646936
+            },
+            "data": {
+                "fields": [
+                    "id",
+                    "name",
+                    "age",
+                    "country"
+                ],
+                "fieldTypes": {
+                    "id": "number",
+                    "name": "string",
+                    "age": "number",
+                    "country": "string"
+                }
+            },
+            "measured": {
+                "width": 150,
+                "height": 100
+            },
+            "selected": true,
+            "dragging": false
+        },
+        {
+            "id": "sort-1762946117839",
+            "type": "sort",
+            "position": {
+                "x": 389.7063212050233,
+                "y": 553.7016228628343
+            },
+            "data": {
+                "fields": [
+                    "id",
+                    "name",
+                    "age",
+                    "country"
+                ],
+                "fieldTypes": {
+                    "id": "number",
+                    "name": "string",
+                    "age": "number",
+                    "country": "string"
+                }
+            },
+            "measured": {
+                "width": 150,
+                "height": 101
+            },
+            "selected": false,
+            "dragging": false
+        },
+        {
+            "id": "lineChart-1762946133172",
+            "type": "lineChart",
+            "position": {
+                "x": 810.8298576488385,
+                "y": 593.1097225054906
+            },
+            "data": {
+                "fields": [
+                    "id",
+                    "name",
+                    "age",
+                    "country"
+                ]
+            },
+            "measured": {
+                "width": 150,
+                "height": 275
+            },
+            "selected": false,
+            "dragging": false
+        },
+        {
+            "id": "export-1762946151539",
+            "type": "export",
+            "position": {
+                "x": 779.4052951839956,
+                "y": 410.32181168189175
+            },
+            "data": {
+                "type": "data"
+            },
+            "measured": {
+                "width": 150,
+                "height": 93
+            },
+            "selected": false,
+            "dragging": false
+        },
+        {
+            "id": "sort-1762946159806",
+            "type": "sort",
+            "position": {
+                "x": 310.6771034845531,
+                "y": 729.4681390409679
+            },
+            "data": {
+                "fields": [
+                    "id",
+                    "name",
+                    "age",
+                    "country"
+                ],
+                "fieldTypes": {
+                    "id": "number",
+                    "name": "string",
+                    "age": "number",
+                    "country": "string"
+                }
+            },
+            "measured": {
+                "width": 150,
+                "height": 101
+            },
+            "selected": false,
+            "dragging": false
+        },
+        {
+            "id": "areaChart-1762946174891",
+            "type": "areaChart",
+            "position": {
+                "x": 567.3511336719009,
+                "y": 766.7402336731981
+            },
+            "data": {
+                "fields": [
+                    "id",
+                    "name",
+                    "age",
+                    "country"
+                ]
+            },
+            "measured": {
+                "width": 150,
+                "height": 275
+            },
+            "selected": false,
+            "dragging": false
+        }
+    ],
+    "edges": [
+        {
+            "source": "dataSource-1762946089038",
+            "sourceHandle": "output-0",
+            "target": "filter-1762946079773",
+            "targetHandle": "input-0",
+            "animated": true,
+            "id": "xy-edge__dataSource-1762946089038output-0-filter-1762946079773input-0"
+        },
+        {
+            "source": "filter-1762946079773",
+            "sourceHandle": "output-0",
+            "target": "sort-1762946087289",
+            "targetHandle": "input-0",
+            "animated": true,
+            "id": "xy-edge__filter-1762946079773output-0-sort-1762946087289input-0"
+        },
+        {
+            "source": "dataSource-1762946089038",
+            "sourceHandle": "output-0",
+            "target": "filter-1762946086306",
+            "targetHandle": "input-0",
+            "animated": true,
+            "id": "xy-edge__dataSource-1762946089038output-0-filter-1762946086306input-0"
+        },
+        {
+            "source": "sort-1762946087289",
+            "sourceHandle": "output-0",
+            "target": "group-1762946106372",
+            "targetHandle": "input-0",
+            "animated": true,
+            "id": "xy-edge__sort-1762946087289output-0-group-1762946106372input-0"
+        },
+        {
+            "source": "filter-1762946086306",
+            "sourceHandle": "output-0",
+            "target": "sort-1762946117839",
+            "targetHandle": "input-0",
+            "animated": true,
+            "id": "xy-edge__filter-1762946086306output-0-sort-1762946117839input-0"
+        },
+        {
+            "source": "sort-1762946117839",
+            "sourceHandle": "output-0",
+            "target": "lineChart-1762946133172",
+            "targetHandle": "input-0",
+            "animated": true,
+            "id": "xy-edge__sort-1762946117839output-0-lineChart-1762946133172input-0"
+        },
+        {
+            "source": "group-1762946106372",
+            "sourceHandle": "output-0",
+            "target": "export-1762946151539",
+            "targetHandle": "input-0",
+            "animated": true,
+            "id": "xy-edge__group-1762946106372output-0-export-1762946151539input-0"
+        },
+        {
+            "source": "filter-1762946086306",
+            "sourceHandle": "output-0",
+            "target": "sort-1762946159806",
+            "targetHandle": "input-0",
+            "animated": true,
+            "id": "xy-edge__filter-1762946086306output-0-sort-1762946159806input-0"
+        },
+        {
+            "source": "sort-1762946159806",
+            "sourceHandle": "output-0",
+            "target": "areaChart-1762946174891",
+            "targetHandle": "input-0",
+            "animated": true,
+            "id": "xy-edge__sort-1762946159806output-0-areaChart-1762946174891input-0"
+        }
+    ],
+    "viewport": {
+        "x": 291.96185708788016,
+        "y": -159.94229824887475,
+        "zoom": 0.9119669135442715
+    }
+}
