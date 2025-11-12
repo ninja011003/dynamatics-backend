@@ -38,9 +38,8 @@ class Runner:
 
         for node_id in self.exec_order:
             node = self.nodes[node_id]
-            type = node_id.split("-")[0].lower().strip()
+            type = node.get("type","export").lower().strip()
             _func = func_map[type]
-            print("reached : ", type)
 
             cur_process = None
 
@@ -56,7 +55,8 @@ class Runner:
                 cur_process.run(**node.get("config", {}))
 
             elif _func is Export:
-                cur_process = _func(prev_output)
+                prev_node =self.req_nodes.get(node_id,{})[0]
+                cur_process = _func(prev_node.output)
                 cur_process.run(**node.get("config", {}))
 
                 if hasattr(cur_process.output, "to_dict"):
