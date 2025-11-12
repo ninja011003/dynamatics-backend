@@ -1,0 +1,39 @@
+{
+  "nodes": [
+    {
+      "id": "dataSource-1",
+      "type": "dataSource",
+      "config": {
+        "input": "timeseries_long"
+      }
+    },
+    {
+      "id": "forecast-1",
+      "type": "forecast",
+      "config": {
+        "target": "cost",
+        "ts_col": "date",
+        "method": "hw",
+        "horizon": 30,
+        "seasonal_periods": 30,
+        "combine": true
+      }
+    },
+    {
+      "id": "export-1",
+      "type": "export",
+      "config": {}
+    }
+  ],
+  "edges": [
+    {
+      "source": "dataSource-1",
+      "target": "forecast-1"
+    },
+    {
+      "source": "forecast-1",
+      "target": "export-1"
+    }
+  ]
+}
+

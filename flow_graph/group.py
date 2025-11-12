@@ -15,7 +15,6 @@ class Group:
         self.group_by = group_by
         
         if aggregations and fields:
-            # Build aggregation dict: {field1: agg_list, field2: agg_list, ...}
             agg_dict = {}
             for field in fields:
                 agg_dict[field] = aggregations

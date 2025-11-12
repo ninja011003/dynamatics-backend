@@ -1,0 +1,38 @@
+{
+  "nodes": [
+    {
+      "id": "dataSource-1",
+      "type": "dataSource",
+      "config": {
+        "input": "timeseries"
+      }
+    },
+    {
+      "id": "forecast-1",
+      "type": "forecast",
+      "config": {
+        "target": "cost",
+        "ts_col": "date",
+        "method": "holt",
+        "horizon": 14,
+        "combine": true
+      }
+    },
+    {
+      "id": "export-1",
+      "type": "export",
+      "config": {}
+    }
+  ],
+  "edges": [
+    {
+      "source": "dataSource-1",
+      "target": "forecast-1"
+    },
+    {
+      "source": "forecast-1",
+      "target": "export-1"
+    }
+  ]
+}
+

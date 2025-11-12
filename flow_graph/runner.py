@@ -11,6 +11,7 @@ from flow_graph.group import Group
 from flow_graph.sort import Sort
 from flow_graph.data_source import DataSource
 from flow_graph.export import Export
+from flow_graph.forecast import Forecast
 
 func_map = {
     # always lowercase the key
@@ -20,6 +21,7 @@ func_map = {
     "filter": Filter,
     "group": Group,
     "sort": Sort,
+    "forecast": Forecast,
     "export": Export,
     "linechart": Export,
     "barchart": Export,
