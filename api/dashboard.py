@@ -4,8 +4,8 @@ from fastapi.responses import JSONResponse
 from pymongo.database import Database
 
 from api.tags import APITags
+from api.db import get_db
 
-from db import get_db
 
 router = APIRouter(
     prefix="/dashboard",

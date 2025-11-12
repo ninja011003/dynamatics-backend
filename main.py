@@ -10,8 +10,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from middlewares.security import SecurityHeadersMiddleware
 
-from api.flows.router import router as FlowsApiRouter
-from api.dashboard.router import router as DashboardApiRouter
+from api.flows import router as DashboardApiRouter
+from api.dashboard import router as FlowsApiRouter
 
 from api.tags import APITags
 

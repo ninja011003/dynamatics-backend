@@ -22,10 +22,10 @@ func_map = {
 
 
 class Runner:
-    def __init__(self, flow):
-        self.raw_data = json.load(flow)
+    def __init__(self, flow_graph_str):
+        self.raw_data = json.load(flow_graph_str)
         self.parser = Parser()
-        self.parser.parse(flow)
+        self.parser.parse(flow_graph_str)
         self.nodes = self.parser.nodes
         self.req_nodes = self.parser.req_nodes
         self.exec_order = self.parser.topo_sort()
