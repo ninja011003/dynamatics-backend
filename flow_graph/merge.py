@@ -29,6 +29,6 @@ class Merge:
         return self.output
     
 if __name__ == "__main__":
-    merge = Merge()
-    merge.merge(pd.DataFrame({"A": [1,2,3]}), pd.DataFrame({"B": [4,5,6]}))
+    merge = Merge(pd.DataFrame({"A": [1,2,3]}), pd.DataFrame({"B": [4,5,6]}))
+    merge.run()
     print(merge.output) 

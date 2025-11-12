@@ -118,6 +118,7 @@ async def execute_flow(
     request: Request,
     db: Database = Depends(get_db),
     stream: bool = Query(default=False),
+    return_data: bool = Query(default=True),
 ):
     try:
         payload = await request.json()
@@ -130,7 +131,7 @@ async def execute_flow(
 
         runner = Runner(flow_graph)
 
-        if stream:
+        if stream and return_data:
             return StreamingResponse(
                 runner.execute(),
                 media_type="application/json",
@@ -138,10 +139,15 @@ async def execute_flow(
             )
 
         outputs = list(runner.execute())
-
-        print("REACHED")
-
         outputs = [json.loads(o) for o in outputs]
+        if not return_data:
+            metadata = []
+            for output in outputs:
+                metadata.append({
+                    "total_rows": len(output["output"]),
+                    "column_names": output["output"][0].keys(),
+                })
+            return JSONResponse({"status": "success", "data": metadata}, status_code=200)
 
         return JSONResponse({"status": "success", "data": outputs}, status_code=200)
 
