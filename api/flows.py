@@ -139,15 +139,20 @@ async def execute_flow(
             )
 
         outputs = list(runner.execute())
+
         outputs = [json.loads(o) for o in outputs]
         if not return_data:
             metadata = []
             for output in outputs:
-                metadata.append({
-                    "total_rows": len(output["output"]),
-                    "column_names": output["output"][0].keys(),
-                })
-            return JSONResponse({"status": "success", "data": metadata}, status_code=200)
+                metadata.append(
+                    {
+                        "total_rows": len(output["output"]),
+                        "column_names": list(output["output"][0].keys()),
+                    }
+                )
+            return JSONResponse(
+                {"status": "success", "data": metadata}, status_code=200
+            )
 
         return JSONResponse({"status": "success", "data": outputs}, status_code=200)
 
