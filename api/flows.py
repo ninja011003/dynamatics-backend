@@ -222,129 +222,139 @@ async def get_data_node_metadata(
     # Static metadata dictionary for all mock datasets
     DATASET_METADATA = {
         "timeseries": {
-            "total_rows": 62,
-            "column_names": ["date", "cost", "revenue", "product"],
-            "column_types": ["str", "float", "float", "str"]
+            "date": "str",
+            "cost": "float",
+            "revenue": "float",
+            "product": "str"
         },
         "timeseries_long": {
-            "total_rows": 365,
-            "column_names": ["date", "cost", "revenue", "product"],
-            "column_types": ["str", "float", "float", "str"]
+            "date": "str",
+            "cost": "float",
+            "revenue": "float",
+            "product": "str"
         },
         "timeseries_multi": {
-            "total_rows": 270,
-            "column_names": ["date", "cost", "revenue", "product"],
-            "column_types": ["str", "float", "float", "str"]
+            "date": "str",
+            "cost": "float",
+            "revenue": "float",
+            "product": "str"
         },
         "automate": {
-            "total_rows": 7000,
-            "column_names": [
-                "type", "timestamp", "stack_uid", "organization_uid", "user_uid",
-                "net.client.ip", "net.client.port", "net.client.user_agent",
-                "net.server.ip", "net.server.port", "net.server.hostname",
-                "http.request.method", "http.request.url", "http.request.headers.user-agent",
-                "http.request.headers.accept", "http.request.headers.x-request-id",
-                "http.request.query_params", "http.request.body",
-                "http.response.status_code", "http.response.body", "http.response.errors",
-                "metrics.response_time_ms",
-                "automate.api_requests", "automate.executions"
-            ],
-            "column_types": [
-                "str", "str", "str", "str", "str",
-                "str", "int", "str",
-                "str", "int", "str",
-                "str", "str", "str",
-                "str", "str",
-                "dict", "str",
-                "int", "str", "str",
-                "int",
-                "list", "list"
-            ]
+            "type": "str",
+            "timestamp": "str",
+            "stack_uid": "str",
+            "organization_uid": "str",
+            "user_uid": "str",
+            "net.client.ip": "str",
+            "net.client.port": "int",
+            "net.client.user_agent": "str",
+            "net.server.ip": "str",
+            "net.server.port": "int",
+            "net.server.hostname": "str",
+            "http.request.method": "str",
+            "http.request.url": "str",
+            "http.request.headers.user-agent": "str",
+            "http.request.headers.accept": "str",
+            "http.request.headers.x-request-id": "str",
+            "http.request.query_params": "dict",
+            "http.request.body": "str",
+            "http.response.status_code": "int",
+            "http.response.body": "str",
+            "http.response.errors": "str",
+            "metrics.response_time_ms": "int",
+            "automate.api_requests": "list",
+            "automate.executions": "list"
         },
         "brandkit": {
-            "total_rows": 10000,
-            "column_names": [
-                "type", "timestamp", "stack_uid", "organization_uid", "user_uid",
-                "net.client.ip", "net.client.port", "net.client.user_agent",
-                "net.server.ip", "net.server.port", "net.server.hostname",
-                "http.request.method", "http.request.url", "http.request.headers.user-agent",
-                "http.request.headers.accept", "http.request.headers.x-request-id",
-                "http.request.query_params", "http.request.body",
-                "http.response.status_code", "http.response.body", "http.response.errors",
-                "metrics.response_time_ms",
-                "brandkit.voice_profiles", "brandkit.api_requests", "brandkit.brand_kits"
-            ],
-            "column_types": [
-                "str", "str", "str", "str", "str",
-                "str", "int", "str",
-                "str", "int", "str",
-                "str", "str", "str",
-                "str", "str",
-                "dict", "str",
-                "int", "str", "str",
-                "int",
-                "list", "list", "list"
-            ]
+            "type": "str",
+            "timestamp": "str",
+            "stack_uid": "str",
+            "organization_uid": "str",
+            "user_uid": "str",
+            "net.client.ip": "str",
+            "net.client.port": "int",
+            "net.client.user_agent": "str",
+            "net.server.ip": "str",
+            "net.server.port": "int",
+            "net.server.hostname": "str",
+            "http.request.method": "str",
+            "http.request.url": "str",
+            "http.request.headers.user-agent": "str",
+            "http.request.headers.accept": "str",
+            "http.request.headers.x-request-id": "str",
+            "http.request.query_params": "dict",
+            "http.request.body": "str",
+            "http.response.status_code": "int",
+            "http.response.body": "str",
+            "http.response.errors": "str",
+            "metrics.response_time_ms": "int",
+            "brandkit.voice_profiles": "list",
+            "brandkit.api_requests": "list",
+            "brandkit.brand_kits": "list"
         },
         "cms": {
-            "total_rows": 15000,
-            "column_names": [
-                "type", "timestamp", "stack_uid", "organization_uid", "user_uid",
-                "net.client.ip", "net.client.port", "net.client.user_agent",
-                "net.server.ip", "net.server.port", "net.server.hostname",
-                "http.request.method", "http.request.url", "http.request.headers.user-agent",
-                "http.request.headers.accept", "http.request.headers.x-request-id",
-                "http.request.query_params", "http.request.body",
-                "http.response.status_code", "http.response.body", "http.response.errors",
-                "metrics.response_time_ms",
-                "cms.assets", "cms.api_requests", "cms.content_types"
-            ],
-            "column_types": [
-                "str", "str", "str", "str", "str",
-                "str", "int", "str",
-                "str", "int", "str",
-                "str", "str", "str",
-                "str", "str",
-                "dict", "str",
-                "int", "str", "str",
-                "int",
-                "list", "list", "list"
-            ]
+            "type": "str",
+            "timestamp": "str",
+            "stack_uid": "str",
+            "organization_uid": "str",
+            "user_uid": "str",
+            "net.client.ip": "str",
+            "net.client.port": "int",
+            "net.client.user_agent": "str",
+            "net.server.ip": "str",
+            "net.server.port": "int",
+            "net.server.hostname": "str",
+            "http.request.method": "str",
+            "http.request.url": "str",
+            "http.request.headers.user-agent": "str",
+            "http.request.headers.accept": "str",
+            "http.request.headers.x-request-id": "str",
+            "http.request.query_params": "dict",
+            "http.request.body": "str",
+            "http.response.status_code": "int",
+            "http.response.body": "str",
+            "http.response.errors": "str",
+            "metrics.response_time_ms": "int",
+            "cms.assets": "list",
+            "cms.api_requests": "list",
+            "cms.content_types": "list"
         },
         "launch": {
-            "total_rows": 4000,
-            "column_names": [
-                "type", "timestamp", "stack_uid", "organization_uid", "user_uid",
-                "net.client.ip", "net.client.port", "net.client.user_agent",
-                "net.server.ip", "net.server.port", "net.server.hostname",
-                "http.request.method", "http.request.url", "http.request.headers.user-agent",
-                "http.request.headers.accept", "http.request.headers.x-request-id",
-                "http.request.query_params", "http.request.body",
-                "http.response.status_code", "http.response.body", "http.response.errors",
-                "metrics.response_time_ms",
-                "launch.environments"
-            ],
-            "column_types": [
-                "str", "str", "str", "str", "str",
-                "str", "int", "str",
-                "str", "int", "str",
-                "str", "str", "str",
-                "str", "str",
-                "dict", "str",
-                "int", "str", "str",
-                "int",
-                "list"
-            ]
+            "type": "str",
+            "timestamp": "str",
+            "stack_uid": "str",
+            "organization_uid": "str",
+            "user_uid": "str",
+            "net.client.ip": "str",
+            "net.client.port": "int",
+            "net.client.user_agent": "str",
+            "net.server.ip": "str",
+            "net.server.port": "int",
+            "net.server.hostname": "str",
+            "http.request.method": "str",
+            "http.request.url": "str",
+            "http.request.headers.user-agent": "str",
+            "http.request.headers.accept": "str",
+            "http.request.headers.x-request-id": "str",
+            "http.request.query_params": "dict",
+            "http.request.body": "str",
+            "http.response.status_code": "int",
+            "http.response.body": "str",
+            "http.response.errors": "str",
+            "metrics.response_time_ms": "int",
+            "launch.environments": "list"
         },
         "test": {
-            "total_rows": 17,
-            "column_names": ["id", "name", "age", "country", "salary"],
-            "column_types": ["int", "str", "int", "str", "int"]
+            "id": "int",
+            "name": "str",
+            "age": "int",
+            "country": "str",
+            "salary": "int"
         },
         "test2": {
-            "total_rows": 11,
-            "column_names": ["id", "department", "budget"],
-            "column_types": ["int", "str", "int"]
+            "id": "int",
+            "department": "str",
+            "budget": "int"
         }
     }
     
