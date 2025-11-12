@@ -50,5 +50,5 @@ class Parser:
         
 if __name__ == "__main__":
     parser = Parser()
-    parser.parse(open("sample_input2.json","r"))
+    parser.parse(open("test_data/test_flow.json","r"))
     print(parser.topo_sort())

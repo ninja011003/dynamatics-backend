@@ -12,7 +12,7 @@ def test_basic_flow():
     print("=" * 60)
     
     # Load the test flow
-    with open("test_flow.json", "r") as f:
+    with open("test_data/test_flow.json", "r") as f:
         flow_graph_str = f.read()
     
     flow_data = json.loads(flow_graph_str)
@@ -24,7 +24,7 @@ def test_basic_flow():
     # Create runner instance (it will parse internally)
     print("\n2. Creating Runner instance and parsing...")
     try:
-        runner = Runner(flow_graph_str)
+        runner = Runner(flow_data)
         print("   ✓ Runner created successfully")
         print(f"   - Execution order: {runner.exec_order}")
         print(f"   - Required nodes: {dict(runner.req_nodes)}")
@@ -79,7 +79,7 @@ def test_merge_flow():
     print("=" * 60)
     
     # Load the merge test flow
-    with open("test_merge_flow.json", "r") as f:
+    with open("test_data/test_merge_flow.json", "r") as f:
         flow_graph_str = f.read()
     
     flow_data = json.loads(flow_graph_str)
@@ -92,7 +92,7 @@ def test_merge_flow():
     # Create runner instance (it will parse internally)
     print("\n2. Creating Runner instance and parsing...")
     try:
-        runner = Runner(flow_graph_str)
+        runner = Runner(flow_data)
         print("   ✓ Runner created successfully")
         print(f"   - Execution order: {runner.exec_order}")
         print(f"   - Required nodes: {dict(runner.req_nodes)}")
@@ -157,7 +157,7 @@ def test_complex_flow():
     print("=" * 60)
     
     # Load the complex test flow
-    with open("test_complex_flow.json", "r") as f:
+    with open("test_data/test_complex_flow.json", "r") as f:
         flow_graph_str = f.read()
     
     flow_data = json.loads(flow_graph_str)
@@ -170,7 +170,7 @@ def test_complex_flow():
     # Create runner instance (it will parse internally)
     print("\n2. Creating Runner instance and parsing...")
     try:
-        runner = Runner(flow_graph_str)
+        runner = Runner(flow_data)
         print("   ✓ Runner created successfully")
         print(f"   - Execution order: {runner.exec_order}")
         print(f"   - Required nodes (dependencies):")
@@ -243,7 +243,7 @@ def test_merge_with_aggregation():
     print("=" * 60)
     
     # Load the merge with aggregation test flow
-    with open("test_merge_agg_flow.json", "r") as f:
+    with open("test_data/test_merge_agg_flow.json", "r") as f:
         flow_graph_str = f.read()
     
     flow_data = json.loads(flow_graph_str)
@@ -256,7 +256,7 @@ def test_merge_with_aggregation():
     # Create runner instance (it will parse internally)
     print("\n2. Creating Runner instance and parsing...")
     try:
-        runner = Runner(flow_graph_str)
+        runner = Runner(flow_data)
         print("   ✓ Runner created successfully")
         print(f"   - Execution order: {runner.exec_order}")
     except Exception as e:
