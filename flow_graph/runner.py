@@ -23,7 +23,7 @@ func_map = {
 
 class Runner:
     def __init__(self, flow_graph_str):
-        self.raw_data = json.load(flow_graph_str)
+        self.raw_data = json.loads(flow_graph_str)
         self.parser = Parser()
         self.parser.parse(flow_graph_str)
         self.nodes = self.parser.nodes
