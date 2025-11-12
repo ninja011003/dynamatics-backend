@@ -17,7 +17,7 @@ class DataSource:
             )
             if not os.path.exists(file_path):
                 raise FileNotFoundError(f"File not found: {file_path}")
-            data = pd.read_json(file_path, lines=True)
+            data = pd.read_json(file_path, lines=True).head(100)
             self.output = self._load_from_dict_or_list(data.to_dict(orient="records"))
         else:
             raise ValueError("Invalid input type")

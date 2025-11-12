@@ -1,4 +1,3 @@
-import math
 import json
 import pandas as pd
 
@@ -29,6 +28,7 @@ func_map = {
     "piechart": Export,
 }
 
+
 def flatten_json(y: Dict[str, Any], parent_key="", sep=".") -> Dict[str, Any]:
     items = []
     for k, v in y.items():
@@ -44,6 +44,7 @@ def flatten_json(y: Dict[str, Any], parent_key="", sep=".") -> Dict[str, Any]:
             items.append((new_key, v))
     return dict(items)
 
+
 def serialize_and_flatten(output_data):
     flat_data = []
     for row in output_data:
@@ -52,7 +53,9 @@ def serialize_and_flatten(output_data):
         for k, v in flat_row.items():
             if isinstance(v, pd.Timestamp):
                 flat_row[k] = v.isoformat()
-            elif isinstance(v, float) and (pd.isna(v) or pd.isnull(v) or v == float("inf") or v == float("-inf")):
+            elif isinstance(v, float) and (
+                pd.isna(v) or pd.isnull(v) or v == float("inf") or v == float("-inf")
+            ):
                 flat_row[k] = None
         flat_data.append(flat_row)
     return flat_data
