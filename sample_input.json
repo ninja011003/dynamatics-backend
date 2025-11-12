@@ -1,0 +1,71 @@
+{
+    "nodes": [
+      {
+        "id": "1",
+        "data": { "label": "Node 1" },
+        "position": { "x": 0, "y": -50 },
+        "measured": { "width": 150, "height": 36 }
+      },
+      {
+        "id": "2",
+        "data": { "label": "Node 2" },
+        "position": { "x": 0, "y": 50 },
+        "measured": { "width": 150, "height": 36 }
+      },
+      {
+        "id": "3",
+        "data": { "label": "Added node" },
+        "position": { "x": -131.55643895430592, "y": 141.76812722271563 },
+        "measured": { "width": 150, "height": 36 },
+        "selected": false,
+        "dragging": false
+      },
+      {
+        "id": "4",
+        "data": { "label": "Added node" },
+        "position": { "x": 120.32612813623554, "y": 144.42624712194362 },
+        "measured": { "width": 150, "height": 36 },
+        "selected": false,
+        "dragging": false
+      },
+      {
+        "id": "5",
+        "data": { "label": "Added node" },
+        "position": { "x": 122.86189829312136, "y": 244.47778282082896 },
+        "measured": { "width": 150, "height": 36 },
+        "selected": false,
+        "dragging": false
+      },
+      {
+        "id": "6",
+        "data": { "label": "Added node" },
+        "position": { "x": -20.704330136951008, "y": 363.49032294552876 },
+        "measured": { "width": 150, "height": 36 },
+        "selected": false,
+        "dragging": false
+      },
+      {
+        "id": "7",
+        "data": { "label": "Added node" },
+        "position": { "x": -16.41267035858631, "y": 470.4922922708407 },
+        "measured": { "width": 150, "height": 36 },
+        "selected": true,
+        "dragging": false
+      }
+    ],
+    "edges": [
+      { "source": "1", "target": "2", "id": "edge_1_2" },
+      { "source": "2", "target": "3", "id": "edge_2_3" },
+      { "source": "2", "target": "4", "id": "edge_2_4" },
+      { "source": "4", "target": "5", "id": "edge_4_5" },
+      { "source": "5", "target": "6", "id": "edge_5_6" },
+      { "source": "3", "target": "6", "id": "edge_3_6" },
+      { "source": "6", "target": "7", "id": "edge_6_7" }
+    ],
+    "viewport": {
+      "x": 468.1067046329865,
+      "y": -73.55249792552931,
+      "zoom": 0.9075191553171618
+    }
+  }
+  
