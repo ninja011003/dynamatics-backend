@@ -1,10 +1,10 @@
-from func.parser import Parser
-from func.merge import Merge
-from func.filter import Filter
-from func.group import Group
-from func.sort import Sort
-from func.data_source import DataSource
-from func.export import Export
+from flow_graph.parser import Parser
+from flow_graph.merge import Merge
+from flow_graph.filter import Filter
+from flow_graph.group import Group
+from flow_graph.sort import Sort
+from flow_graph.data_source import DataSource
+from flow_graph.export import Export
 import json
 
 func_map = {
