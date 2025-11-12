@@ -1,6 +1,6 @@
 import json
 
-from fastapi import APIRouter, Depends, Request, Query
+from fastapi import APIRouter, Depends, Request, Query, HTTPException
 from fastapi.responses import JSONResponse, StreamingResponse
 
 from pymongo.database import Database
@@ -219,4 +219,137 @@ async def execute_flow_by_flow_uid(
 async def get_data_node_metadata(
     request: Request, dataset_name: str, db: Database = Depends(get_db)
 ):
-    pass
+    # Static metadata dictionary for all mock datasets
+    DATASET_METADATA = {
+        "timeseries": {
+            "total_rows": 62,
+            "column_names": ["date", "cost", "revenue", "product"],
+            "column_types": ["str", "float", "float", "str"]
+        },
+        "timeseries_long": {
+            "total_rows": 365,
+            "column_names": ["date", "cost", "revenue", "product"],
+            "column_types": ["str", "float", "float", "str"]
+        },
+        "timeseries_multi": {
+            "total_rows": 270,
+            "column_names": ["date", "cost", "revenue", "product"],
+            "column_types": ["str", "float", "float", "str"]
+        },
+        "automate": {
+            "total_rows": 7000,
+            "column_names": [
+                "type", "timestamp", "stack_uid", "organization_uid", "user_uid",
+                "net.client.ip", "net.client.port", "net.client.user_agent",
+                "net.server.ip", "net.server.port", "net.server.hostname",
+                "http.request.method", "http.request.url", "http.request.headers.user-agent",
+                "http.request.headers.accept", "http.request.headers.x-request-id",
+                "http.request.query_params", "http.request.body",
+                "http.response.status_code", "http.response.body", "http.response.errors",
+                "metrics.response_time_ms",
+                "automate.api_requests", "automate.executions"
+            ],
+            "column_types": [
+                "str", "str", "str", "str", "str",
+                "str", "int", "str",
+                "str", "int", "str",
+                "str", "str", "str",
+                "str", "str",
+                "dict", "str",
+                "int", "str", "str",
+                "int",
+                "list", "list"
+            ]
+        },
+        "brandkit": {
+            "total_rows": 10000,
+            "column_names": [
+                "type", "timestamp", "stack_uid", "organization_uid", "user_uid",
+                "net.client.ip", "net.client.port", "net.client.user_agent",
+                "net.server.ip", "net.server.port", "net.server.hostname",
+                "http.request.method", "http.request.url", "http.request.headers.user-agent",
+                "http.request.headers.accept", "http.request.headers.x-request-id",
+                "http.request.query_params", "http.request.body",
+                "http.response.status_code", "http.response.body", "http.response.errors",
+                "metrics.response_time_ms",
+                "brandkit.voice_profiles", "brandkit.api_requests", "brandkit.brand_kits"
+            ],
+            "column_types": [
+                "str", "str", "str", "str", "str",
+                "str", "int", "str",
+                "str", "int", "str",
+                "str", "str", "str",
+                "str", "str",
+                "dict", "str",
+                "int", "str", "str",
+                "int",
+                "list", "list", "list"
+            ]
+        },
+        "cms": {
+            "total_rows": 15000,
+            "column_names": [
+                "type", "timestamp", "stack_uid", "organization_uid", "user_uid",
+                "net.client.ip", "net.client.port", "net.client.user_agent",
+                "net.server.ip", "net.server.port", "net.server.hostname",
+                "http.request.method", "http.request.url", "http.request.headers.user-agent",
+                "http.request.headers.accept", "http.request.headers.x-request-id",
+                "http.request.query_params", "http.request.body",
+                "http.response.status_code", "http.response.body", "http.response.errors",
+                "metrics.response_time_ms",
+                "cms.assets", "cms.api_requests", "cms.content_types"
+            ],
+            "column_types": [
+                "str", "str", "str", "str", "str",
+                "str", "int", "str",
+                "str", "int", "str",
+                "str", "str", "str",
+                "str", "str",
+                "dict", "str",
+                "int", "str", "str",
+                "int",
+                "list", "list", "list"
+            ]
+        },
+        "launch": {
+            "total_rows": 4000,
+            "column_names": [
+                "type", "timestamp", "stack_uid", "organization_uid", "user_uid",
+                "net.client.ip", "net.client.port", "net.client.user_agent",
+                "net.server.ip", "net.server.port", "net.server.hostname",
+                "http.request.method", "http.request.url", "http.request.headers.user-agent",
+                "http.request.headers.accept", "http.request.headers.x-request-id",
+                "http.request.query_params", "http.request.body",
+                "http.response.status_code", "http.response.body", "http.response.errors",
+                "metrics.response_time_ms",
+                "launch.environments"
+            ],
+            "column_types": [
+                "str", "str", "str", "str", "str",
+                "str", "int", "str",
+                "str", "int", "str",
+                "str", "str", "str",
+                "str", "str",
+                "dict", "str",
+                "int", "str", "str",
+                "int",
+                "list"
+            ]
+        },
+        "test": {
+            "total_rows": 17,
+            "column_names": ["id", "name", "age", "country", "salary"],
+            "column_types": ["int", "str", "int", "str", "int"]
+        },
+        "test2": {
+            "total_rows": 11,
+            "column_names": ["id", "department", "budget"],
+            "column_types": ["int", "str", "int"]
+        }
+    }
+    
+    # Check if dataset exists
+    if dataset_name not in DATASET_METADATA:
+        raise HTTPException(status_code=404, detail=f"Dataset '{dataset_name}' not found")
+    
+    return DATASET_METADATA[dataset_name]
