@@ -6,7 +6,9 @@
             "data": {
                 "fields": ["id", "name", "age", "country", "salary"]
             },
-            "input": "test"
+            "config": {
+                "input": "test"
+            }
         },
         {
             "id": "dataSource-2",
@@ -14,7 +16,9 @@
             "data": {
                 "fields": ["id", "department", "budget"]
             },
-            "input": "test2"
+            "config": {
+                "input": "test2"
+            }
         },
         {
             "id": "filter-1",

@@ -44,7 +44,8 @@ class Runner:
             cur_process = None
 
             if _func is DataSource:
-                cur_process = _func(node.get("input"))
+                config = node.get("config", {})
+                cur_process = _func(**config)
                 prev_output = cur_process.output
 
             elif _func is Merge:

@@ -6,7 +6,9 @@
             "data": {
                 "fields": ["id", "name", "age", "country", "salary"]
             },
-            "input": "test"
+            "config": {
+                "input": "test"
+            }
         },
         {
             "id": "filter-1",
