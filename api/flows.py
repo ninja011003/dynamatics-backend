@@ -139,6 +139,7 @@ async def execute_flow(
             )
 
         outputs = list(runner.execute())
+        print("\n\noutputs : ", outputs)
 
         outputs = [json.loads(o) for o in outputs]
         if not return_data:
@@ -146,8 +147,13 @@ async def execute_flow(
             for output in outputs:
                 metadata.append(
                     {
+                        "node_id": output["node_id"],
                         "total_rows": len(output["output"]),
                         "column_names": list(output["output"][0].keys()),
+                        "column_types": [
+                            "string" if isinstance(x, str) else "number"
+                            for x in output["output"][0].values()
+                        ],
                     }
                 )
             return JSONResponse(
