@@ -11,6 +11,7 @@ from flow_graph.export import Export
 
 func_map = {
     # always lowercase the key
+    "exampledata": DataSource,
     "datasource": DataSource,
     "merge": Merge,
     "filter": Filter,
@@ -55,7 +56,7 @@ class Runner:
                 cur_process.run(**node.get("config", {}))
 
             elif _func is Export:
-                prev_node =self.nodes[self.req_nodes.get(node_id,[])[0]]
+                prev_node =self.executed_processes[self.req_nodes.get(node_id,[])[0]]
                 cur_process = _func(prev_node.output)
                 cur_process.run(**node.get("config", {}))
 
@@ -72,7 +73,7 @@ class Runner:
                 yield json.dumps({"node_id": node_id, "output": output_data}) + "\n"
 
             else:
-                prev_node =self.nodes[self.req_nodes.get(node_id,[])[0]]
+                prev_node =self.executed_processes[self.req_nodes.get(node_id,[])[0]]
                 cur_process = _func(prev_node.output)
                 cur_process.run(**node.get("config", {}))
 
