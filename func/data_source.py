@@ -1,29 +1,33 @@
 from typing import List,Dict
 import pandas as pd
+import os
 
 
 class DataSource:
-    def __init__(self,input :[Dict,List,pd.DataFrame]):
+    def __init__(self,input :[Dict,List,pd.DataFrame,str]):
         if isinstance(input,Dict):
             #TODO conventional column names
-            self.input = pd.DataFrame(input)
+            self.output = pd.DataFrame(input)
         elif isinstance(input,List):
-            self.input = pd.DataFrame(input)
+            self.output = pd.DataFrame(input)
         elif isinstance(input,pd.DataFrame):
-            self.input = input
+            self.output = input
+        elif isinstance(input,str):
+            file_path = os.path.join(os.path.dirname(__file__), "mock_data", input + ".ndjson")
+            self.output = pd.read_json(file_path, lines=True)
         else:
             raise ValueError("Invalid input type")
         
     def get_info(self):
-        return self.input.info()
+        return self.output.info()
     
     def get_shape(self):
-        return self.input.shape
+        return self.output.shape
     
     def get_columns(self):
-        return self.input.columns
+        return self.output.columns
     
     def get_head(self,n:int=5):
-        return self.input.head(n)
+        return self.output.head(n)
     
     

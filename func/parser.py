@@ -7,14 +7,16 @@ class Parser:
     def __init__(self):
         self.nodes ={}
         self.graph = defaultdict(list) # node_id -> [node_id]
+        self.req_nodes = defaultdict(list) # node_id -> [node_id]
         self.exe_order = []
     
     def parse(self,flow:Dict):
         for node in flow["nodes"]:
             self.nodes[node["id"]] = node
         edges = flow["edges"]
-        for edge in edges :
+        for edge in edges:
             self.graph[edge["source"]].append(edge["target"])
+            self.req_nodes[edge["target"]].append(edge["source"])
 
     def topo_sort(self):
         in_degree = defaultdict(int)
