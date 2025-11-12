@@ -1,4 +1,5 @@
 import json
+import pandas as pd
 
 from flow_graph.parser import Parser
 from flow_graph.merge import Merge
@@ -10,7 +11,7 @@ from flow_graph.export import Export
 
 func_map = {
     # always lowercase the key
-    "dataSource": DataSource,
+    "datasource": DataSource,
     "merge": Merge,
     "filter": Filter,
     "group": Group,
@@ -18,6 +19,7 @@ func_map = {
     "export": Export,
     "linechart": Export,
     "barchart": Export,
+    "areachart": Export,
 }
 
 
@@ -25,7 +27,7 @@ class Runner:
     def __init__(self, flow_graph_str):
         self.raw_data = json.loads(flow_graph_str)
         self.parser = Parser()
-        self.parser.parse(flow_graph_str)
+        self.parser.parse(self.raw_data)
         self.nodes = self.parser.nodes
         self.req_nodes = self.parser.req_nodes
         self.exec_order = self.parser.topo_sort()
@@ -54,9 +56,16 @@ class Runner:
             elif _func is Export:
                 cur_process = _func(prev_output)
                 cur_process.run(**node.get("config", {}))
-
+                
+                if hasattr(cur_process.output, 'to_dict'):
+                    df_copy = cur_process.output.copy()
+                    if isinstance(df_copy.columns, pd.MultiIndex):
+                        df_copy.columns = ['_'.join(map(str, col)).strip() for col in df_copy.columns.values]
+                    output_data = df_copy.to_dict(orient='records')
+                else:
+                    output_data = cur_process.output
                 yield (
-                    json.dumps({"node_id": node_id, "output": cur_process.output})
+                    json.dumps({"node_id": node_id, "output": output_data})
                     + "\n"
                 )
 
@@ -68,6 +77,13 @@ class Runner:
             prev_output = cur_process.output
 
             if type not in ["export"]:
-                yield json.dumps({"node_id": node_id, "output": prev_output}) + "\n"
+                if hasattr(prev_output, 'to_dict'):
+                    df_copy = prev_output.copy()
+                    if isinstance(df_copy.columns, pd.MultiIndex):
+                        df_copy.columns = ['_'.join(map(str, col)).strip() for col in df_copy.columns.values]
+                    output_data = df_copy.to_dict(orient='records')
+                else:
+                    output_data = prev_output
+                yield json.dumps({"node_id": node_id, "output": output_data}) + "\n"
 
         return prev_output

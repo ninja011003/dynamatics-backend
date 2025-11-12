@@ -25,7 +25,7 @@ class Parser:
             for target in self.graph[source]:
                 in_degree[target] += 1
         
-        queue = deque([node["id"] for node in self.nodes if in_degree[node["id"]] == 0])
+        queue = deque([node["id"] for node in self.nodes.values() if in_degree[node["id"]] == 0])
     
         self.exe_order = []
         while queue:
