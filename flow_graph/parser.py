@@ -10,7 +10,11 @@ class Parser:
         self.req_nodes = defaultdict(list) # node_id -> [node_id]
         self.exe_order = []
     
+
     def parse(self,flow:Dict):
+
+        print("\n\nflow : \n\n", flow)
+
         for node in flow["nodes"]:
             self.nodes[node["id"]] = node
         edges = flow["edges"]

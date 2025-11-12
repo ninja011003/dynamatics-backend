@@ -24,10 +24,10 @@ func_map = {
 
 
 class Runner:
-    def __init__(self, flow_graph_str):
-        self.raw_data = json.loads(flow_graph_str)
+    def __init__(self, flow_graph_dict: dict):
+        self.raw_data = flow_graph_dict
         self.parser = Parser()
-        self.parser.parse(self.raw_data)
+        self.parser.parse(flow_graph_dict)
         self.nodes = self.parser.nodes
         self.req_nodes = self.parser.req_nodes
         self.exec_order = self.parser.topo_sort()
@@ -38,8 +38,9 @@ class Runner:
 
         for node_id in self.exec_order:
             node = self.nodes[node_id]
-            type = node_id.split("-")[0].lower()
+            type = node_id.split("-")[0].lower().strip()
             _func = func_map[type]
+            print("reached : ", type)
 
             cur_process = None
 
@@ -57,18 +58,18 @@ class Runner:
             elif _func is Export:
                 cur_process = _func(prev_output)
                 cur_process.run(**node.get("config", {}))
-                
-                if hasattr(cur_process.output, 'to_dict'):
+
+                if hasattr(cur_process.output, "to_dict"):
                     df_copy = cur_process.output.copy()
                     if isinstance(df_copy.columns, pd.MultiIndex):
-                        df_copy.columns = ['_'.join(map(str, col)).strip() for col in df_copy.columns.values]
-                    output_data = df_copy.to_dict(orient='records')
+                        df_copy.columns = [
+                            "_".join(map(str, col)).strip()
+                            for col in df_copy.columns.values
+                        ]
+                    output_data = df_copy.to_dict(orient="records")
                 else:
                     output_data = cur_process.output
-                yield (
-                    json.dumps({"node_id": node_id, "output": output_data})
-                    + "\n"
-                )
+                yield json.dumps({"node_id": node_id, "output": output_data}) + "\n"
 
             else:
                 cur_process = _func(prev_output)
@@ -78,11 +79,14 @@ class Runner:
             prev_output = cur_process.output
 
             if type not in ["export"]:
-                if hasattr(prev_output, 'to_dict'):
+                if hasattr(prev_output, "to_dict"):
                     df_copy = prev_output.copy()
                     if isinstance(df_copy.columns, pd.MultiIndex):
-                        df_copy.columns = ['_'.join(map(str, col)).strip() for col in df_copy.columns.values]
-                    output_data = df_copy.to_dict(orient='records')
+                        df_copy.columns = [
+                            "_".join(map(str, col)).strip()
+                            for col in df_copy.columns.values
+                        ]
+                    output_data = df_copy.to_dict(orient="records")
                 else:
                     output_data = prev_output
                 yield json.dumps({"node_id": node_id, "output": output_data}) + "\n"
