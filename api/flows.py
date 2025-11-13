@@ -12,6 +12,8 @@ from flow_graph.runner import Runner
 
 from api.utils import generate_uid
 
+from flow_graph.pseudorunner import PseudoRunner
+
 router = APIRouter(
     prefix="/flows",
     tags=[APITags.FLOWS],
@@ -244,6 +246,56 @@ async def execute_flow_by_flow_uid(
 ################################################################################
 # Metadata Methods
 ################################################################################
+
+
+@router.post("/metadata/execute")
+async def execute_flow_metadata(
+    request: Request,
+    db: Database = Depends(get_db),
+    stream: bool = Query(default=False),
+):
+    try:
+        payload = await request.json()
+        flow_graph = payload.get("flow_graph")
+
+        if not flow_graph:
+            return JSONResponse(
+                {"status": "error", "message": "Flow graph is empty"},
+                status_code=200,
+            )
+
+        pseudo_runner = PseudoRunner(flow_graph)
+
+        if stream:
+            return StreamingResponse(
+                pseudo_runner.execute(),
+                media_type="application/json",
+                status_code=200,
+            )
+
+        outputs_raw = list(pseudo_runner.execute())
+        outputs = []
+        for o in outputs_raw:
+            if isinstance(o, dict):
+                outputs.append(o)
+            elif isinstance(o, str) and o.strip():
+                try:
+                    outputs.append(json.loads(o))
+                except json.JSONDecodeError:
+                    outputs.append({"raw": o})
+            else:
+                outputs.append({"raw": str(o)})
+
+        return JSONResponse({"status": "success", "data": outputs}, status_code=200)
+
+    except Exception as e:
+        print("Error executing flow metadata:", e)
+        import traceback
+        traceback.print_exc()
+        return JSONResponse(
+            {"status": "error", "message": "Failed to execute flow metadata", "detail": str(e)},
+            status_code=500,
+        )
 
 
 @router.get("/metadata/{dataset_name}")
