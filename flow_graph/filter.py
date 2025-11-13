@@ -18,23 +18,45 @@ Filters = {
 
 class Filter:
     def __init__(self, input_df: pd.DataFrame):
-        self.is_completed = False
         self.input = input_df
-        self.output = None
-        self.condition = None
-        self.value = None
-        self.field = None
+        self.output = input_df.copy()
 
-    def run(self, condition: str, value, field: str):
-        self.condition = condition
-        self.value = value
-        self.field = field
+    def run(self, rules: list):
+        """
+        rules: list of dicts
+        [
+            {"field": "A", "condition": "gte", "value": 5, "operator": "AND"},
+            {"field": "B", "condition": "lt", "value": 10, "operator": "OR"},
+            ...
+        ]
+        The first rule's "operator" is ignored (assume AND)
+        """
+        if not rules:
+            return self.input
 
-        filter_func = Filters.get(self.condition, None)
-        if not filter_func:
-            raise ValueError(f"Invalid filter operator: {self.condition}")
+        mask = pd.Series(True, index=self.input.index)
 
-        mask = self.input[field].apply(lambda x: filter_func(x, value))
+        for i, rule in enumerate(rules):
+            field = rule["field"]
+            condition = rule["condition"]
+            value = rule["value"]
+            operator = rule.get("operator", "AND").upper()
+
+            filter_func = Filters.get(condition)
+            if not filter_func:
+                raise ValueError(f"Invalid filter operator: {condition}")
+
+            current_mask = self.input[field].apply(lambda x: filter_func(x, value))
+
+            if i == 0:
+                mask = current_mask
+            else:
+                if operator == "AND":
+                    mask &= current_mask
+                elif operator == "OR":
+                    mask |= current_mask
+                else:
+                    raise ValueError(f"Invalid logical operator: {operator}")
 
         self.output = self.input[mask].reset_index(drop=True)
         return self.output
@@ -42,6 +64,11 @@ class Filter:
 
 if __name__ == "__main__":
     df = pd.DataFrame({"A": [1, 2, 3, 5, 3, 24, 7, 8], "B": [1, 2, 3, 4, 5, 6, 7, 8]})
-    filter_obj = Filter(df)
-    result = filter_obj.run("gte", 8, "A")
+    f = Filter(df)
+    rules = [
+        {"field": "A", "condition": "gte", "value": 3, "operator": "AND"},
+        {"field": "B", "condition": "lt", "value": 7, "operator": "OR"},
+        {"field": "A", "condition": "eq", "value": 24, "operator": "AND"},
+    ]
+    result = f.run(rules)
     print(result)

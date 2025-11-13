@@ -112,7 +112,6 @@ async def delete_flow(flow_uid: str, db: Database = Depends(get_db)):
 ################################################################################
 
 
-# In builder ... so no flow_uid
 @router.post("/execute")
 async def execute_flow(
     request: Request,
@@ -126,40 +125,72 @@ async def execute_flow(
 
         if not flow_graph:
             return JSONResponse(
-                {"status": "error", "message": "Flow graph is empty"}, status_code=200
+                {"status": "error", "message": "Flow graph is empty"},
+                status_code=200,
             )
 
         runner = Runner(flow_graph)
 
+        # --- Streaming mode ---
         if stream and return_data:
+
+            async def generator():
+                for o in runner.execute():
+                    if isinstance(o, dict):
+                        yield json.dumps(o)
+                    elif isinstance(o, str) and o.strip():
+                        yield o
+
             return StreamingResponse(
-                runner.execute(),
-                media_type="application/json",
-                status_code=200,
+                generator(), media_type="application/json", status_code=200
             )
 
-        outputs = list(runner.execute())
-        print("\n\noutputs : ", outputs)
+        # --- Non-streaming mode ---
+        outputs_raw = list(runner.execute())
 
-        outputs = [json.loads(o) for o in outputs]
+        # Safely parse outputs
+        outputs = []
+        for o in outputs_raw:
+            if isinstance(o, dict):
+                outputs.append(o)
+            elif isinstance(o, str) and o.strip():
+                try:
+                    outputs.append(json.loads(o))
+                except json.JSONDecodeError:
+                    # fallback: store raw string
+                    outputs.append({"raw": o})
+            else:
+                # fallback for None or unexpected type
+                outputs.append({"raw": str(o)})
+
+        # --- return_data=False metadata mode ---
         if not return_data:
             metadata = []
             for output in outputs:
+                node_output = output.get("output", [])
+                if node_output:
+                    first_row = node_output[0]
+                    column_names = list(first_row.keys())
+                    column_types = [
+                        "string" if isinstance(x, str) else "number"
+                        for x in first_row.values()
+                    ]
+                else:
+                    column_names, column_types = [], []
+
                 metadata.append(
                     {
-                        "node_id": output["node_id"],
-                        "total_rows": len(output["output"]),
-                        "column_names": list(output["output"][0].keys()),
-                        "column_types": [
-                            "string" if isinstance(x, str) else "number"
-                            for x in output["output"][0].values()
-                        ],
+                        "node_id": output.get("node_id"),
+                        "total_rows": len(node_output),
+                        "column_names": column_names,
+                        "column_types": column_types,
                     }
                 )
             return JSONResponse(
                 {"status": "success", "data": metadata}, status_code=200
             )
 
+        # --- return full data ---
         return JSONResponse({"status": "success", "data": outputs}, status_code=200)
 
     except Exception as e:
@@ -225,19 +256,19 @@ async def get_data_node_metadata(
             "date": "str",
             "cost": "float",
             "revenue": "float",
-            "product": "str"
+            "product": "str",
         },
         "timeseries_long": {
             "date": "str",
             "cost": "float",
             "revenue": "float",
-            "product": "str"
+            "product": "str",
         },
         "timeseries_multi": {
             "date": "str",
             "cost": "float",
             "revenue": "float",
-            "product": "str"
+            "product": "str",
         },
         "automate": {
             "type": "str",
@@ -263,7 +294,7 @@ async def get_data_node_metadata(
             "http.response.errors": "str",
             "metrics.response_time_ms": "int",
             "automate.api_requests": "list",
-            "automate.executions": "list"
+            "automate.executions": "list",
         },
         "brandkit": {
             "type": "str",
@@ -290,7 +321,7 @@ async def get_data_node_metadata(
             "metrics.response_time_ms": "int",
             "brandkit.voice_profiles": "list",
             "brandkit.api_requests": "list",
-            "brandkit.brand_kits": "list"
+            "brandkit.brand_kits": "list",
         },
         "cms": {
             "type": "str",
@@ -317,7 +348,7 @@ async def get_data_node_metadata(
             "metrics.response_time_ms": "int",
             "cms.assets": "list",
             "cms.api_requests": "list",
-            "cms.content_types": "list"
+            "cms.content_types": "list",
         },
         "launch": {
             "type": "str",
@@ -342,24 +373,22 @@ async def get_data_node_metadata(
             "http.response.body": "str",
             "http.response.errors": "str",
             "metrics.response_time_ms": "int",
-            "launch.environments": "list"
+            "launch.environments": "list",
         },
         "test": {
             "id": "int",
             "name": "str",
             "age": "int",
             "country": "str",
-            "salary": "int"
+            "salary": "int",
         },
-        "test2": {
-            "id": "int",
-            "department": "str",
-            "budget": "int"
-        }
+        "test2": {"id": "int", "department": "str", "budget": "int"},
     }
-    
+
     # Check if dataset exists
     if dataset_name not in DATASET_METADATA:
-        raise HTTPException(status_code=404, detail=f"Dataset '{dataset_name}' not found")
-    
+        raise HTTPException(
+            status_code=404, detail=f"Dataset '{dataset_name}' not found"
+        )
+
     return DATASET_METADATA[dataset_name]

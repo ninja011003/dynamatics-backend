@@ -146,6 +146,6 @@ class Runner:
 
             return prev_output
 
-        except Exception as e:
-            print(e)
+        except Exception :
+            # print(e)
             return prev_output
