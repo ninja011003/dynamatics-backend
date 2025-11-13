@@ -8,7 +8,7 @@ APIs for **dashboard and flow related operations**
 > The executor uses **topological sorting** to ensure nodes are executed in the
 > correct order and is generic enough to handle **any node type**.
 
-![alt text](image.png)
+![alt text](dynamatics.png)
 
 ## Features
 
