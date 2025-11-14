@@ -28,10 +28,26 @@ class Forecast:
         self.output = None
 
     def _validate(self, ts_col: str, target: str):
+        """Validate that required columns exist in the input DataFrame."""
+        available_cols = list(self.input.columns)
+        
         if ts_col not in self.input.columns:
-            raise ValueError(f"Time column '{ts_col}' not found in DataFrame")
+            raise ValueError(
+                f"Time column '{ts_col}' not found in DataFrame. "
+                f"Available columns: {available_cols}"
+            )
         if target not in self.input.columns:
-            raise ValueError(f"Target column '{target}' not found in DataFrame")
+            raise ValueError(
+                f"Target column '{target}' not found in DataFrame. "
+                f"Available columns: {available_cols}"
+            )
+        
+        # Check for sufficient data
+        if len(self.input) < 2:
+            raise ValueError(
+                f"Insufficient data for forecasting. Need at least 2 data points, "
+                f"but got {len(self.input)}"
+            )
 
     @staticmethod
     def _infer_freq(series: pd.Series) -> Optional[str]:
@@ -171,6 +187,25 @@ class Forecast:
         """
         Runs forecast and returns DataFrame with columns [ts_col, 'forecast'].
         If combine=True returns concatenated historical rows then forecast rows (useful for plotting).
+        
+        Args:
+            target: Column name containing the values to forecast (required)
+            ts_col: Column name containing the timestamp/date values (required)
+            method: Forecast method - one of: 'holt', 'hw'/'holt_winters', 'moving_average', 
+                   'exp_smoothing', 'linear_trend', 'naive', 'mean', 'arima'
+            horizon: Number of periods to forecast into the future (default: 1)
+            freq: Frequency of time series (e.g., 'D', 'H', 'W'). Auto-detected if None
+            window: Window size for moving average (default: 3)
+            alpha: Smoothing parameter for exponential smoothing (default: 0.2)
+            order: (p,d,q) order for ARIMA model (default: (1,1,1))
+            seasonal_periods: Number of periods in a season for Holt-Winters (required for 'hw')
+            combine: If True, combines historical + forecast data (default: False)
+        
+        Returns:
+            DataFrame with columns [ts_col, 'forecast'] and optionally 'source' if combine=True
+        
+        Raises:
+            ValueError: If required columns are missing or method-specific parameters are invalid
         """
         self._validate(ts_col, target)
         df = self.input[[ts_col, target]].dropna().copy()

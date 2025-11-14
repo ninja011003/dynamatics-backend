@@ -150,6 +150,8 @@ class Runner:
 
             return prev_output
 
-        except Exception:
-            # print(e)
+        except Exception as e:
+            print(f"Error executing flow at node {node_id}: {str(e)}")
+            import traceback
+            traceback.print_exc()
             return prev_output
