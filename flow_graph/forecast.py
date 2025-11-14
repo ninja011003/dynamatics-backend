@@ -21,10 +21,10 @@ except Exception:
 
 
 class Forecast:
-    def __init__(self, input_df: pd.DataFrame):
-        if not isinstance(input_df, pd.DataFrame):
+    def __init__(self, input: pd.DataFrame):
+        if not isinstance(input, pd.DataFrame):
             raise ValueError("Forecast requires a pandas DataFrame as input")
-        self.input = input_df.copy()
+        self.input = input.copy()
         self.output = None
 
     def _validate(self, ts_col: str, target: str):

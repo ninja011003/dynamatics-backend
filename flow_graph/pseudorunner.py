@@ -128,6 +128,7 @@ class PseudoRunner:
         
         return result_columns
     
+    
     def get_merge_columns(
         self, 
         columns1: Dict[str, str], 
@@ -182,6 +183,14 @@ class PseudoRunner:
         
         return result
     
+    def get_anomaly_columns(self, input_columns: Dict[str, str], config: dict) -> Dict[str, str]:
+
+        result = {}
+        result["anomaly_score"] = "float"
+        result["is_anomaly"] = "bool"
+        
+        return result
+    
     def get_export_columns(self, input_columns: Dict[str, str], config: dict) -> Dict[str, str]:
         return input_columns.copy()
     
@@ -228,6 +237,12 @@ class PseudoRunner:
                     if prev_nodes and prev_nodes[0] in self.node_metadata:
                         prev_columns = self.node_metadata[prev_nodes[0]]
                         columns = self.get_forecast_columns(prev_columns, config)
+
+                elif node_type == "anomaly":
+                    prev_nodes = self.req_nodes.get(node_id, [])
+                    if prev_nodes and prev_nodes[0] in self.node_metadata:
+                        prev_columns = self.node_metadata[prev_nodes[0]]
+                        columns = self.get_anomaly_columns(prev_columns, config)
                     
                 elif node_type in ["export", "linechart", "barchart", "areachart", "piechart"]:
                     prev_nodes = self.req_nodes.get(node_id, [])

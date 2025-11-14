@@ -27,10 +27,16 @@ class Anomaly:
             return pd.Series(np.zeros(len(x)), index=self.input.index)
         return (x - mu).abs() / sigma
 
-    def _rolling_z(self, field: str, window: int = 7, min_periods: int = 3) -> pd.Series:
+    def _rolling_z(
+        self, field: str, window: int = 7, min_periods: int = 3
+    ) -> pd.Series:
         x = self.input[field].astype(float)
-        roll_mean = x.rolling(window=window, min_periods=min_periods, center=True).mean()
-        roll_std = x.rolling(window=window, min_periods=min_periods, center=True).std(ddof=0)
+        roll_mean = x.rolling(
+            window=window, min_periods=min_periods, center=True
+        ).mean()
+        roll_std = x.rolling(window=window, min_periods=min_periods, center=True).std(
+            ddof=0
+        )
         score = (x - roll_mean).abs() / roll_std
         # replace NaN (edges) with global z-score
         score = score.fillna(self._z_score(field))
@@ -57,13 +63,22 @@ class Anomaly:
         """Detect spikes by comparing to local median and MAD (robust)."""
         x = self.input[field].astype(float)
         med = x.rolling(window=window, min_periods=1, center=True).median()
-        mad = (x - med).abs().rolling(window=window, min_periods=1, center=True).median()
+        mad = (
+            (x - med).abs().rolling(window=window, min_periods=1, center=True).median()
+        )
         mad = mad.replace(0, np.nan)
         score = (x - med).abs() / mad
         score = score.fillna(0)
         return score
 
-    def run(self, field: str, method: str = "z_score", threshold: float = 3.0, params: Optional[Dict[str, Any]] = None) -> pd.DataFrame:
+    def run(
+        self,
+        field: str,
+        method: str = "z_score",
+        threshold: float = 3.0,
+        params: Optional[Dict[str, Any]] = None,
+    ) -> pd.DataFrame:
+        print("INSIDE RUN : ", field, method)
         """Run anomaly detection.
 
         Args:
@@ -104,6 +119,7 @@ class Anomaly:
         out["is_anomaly"] = out["anomaly_score"] > float(threshold)
 
         self.output = out
+        print("\n\noutput : \n\n", self.output)
         return self.output
 
 
