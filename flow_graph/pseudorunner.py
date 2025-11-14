@@ -59,9 +59,17 @@ class PseudoRunner:
             if not os.path.exists(file_path):
                 return {}
             
-            df = pd.read_json(file_path, lines=True, nrows=1)
-            first_row = df.to_dict(orient="records")[0]
-            return self._flatten_keys_with_types(first_row)
+            # Load all data to capture columns from all rows
+            df = pd.read_json(file_path, lines=True)
+            
+            # Collect all columns from all rows
+            all_columns = {}
+            for _, row in df.iterrows():
+                row_dict = row.to_dict()
+                row_columns = self._flatten_keys_with_types(row_dict)
+                all_columns.update(row_columns)
+            
+            return all_columns
         except Exception:
             return {}
     
