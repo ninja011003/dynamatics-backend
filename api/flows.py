@@ -217,20 +217,28 @@ async def execute_flow_by_flow_uid(
             )
 
         flow_graph_dict = data.get("flow_graph", "")
+
         runner = Runner(flow_graph_dict)
 
-        if stream:
-            return StreamingResponse(
-                runner.execute(),
-                media_type="application/json",
-                status_code=200,
-            )
+        # --- Non-streaming mode ---
+        outputs_raw = list(runner.execute())
 
-        # If not streaming, collect all outputs into a list
-        outputs = list(runner.execute())
-        # Convert JSON strings back to Python objects
-        outputs = [json.loads(o) for o in outputs]
+        # Safely parse outputs
+        outputs = []
+        for o in outputs_raw:
+            if isinstance(o, dict):
+                outputs.append(o)
+            elif isinstance(o, str) and o.strip():
+                try:
+                    outputs.append(json.loads(o))
+                except json.JSONDecodeError:
+                    # fallback: store raw string
+                    outputs.append({"raw": o})
+            else:
+                # fallback for None or unexpected type
+                outputs.append({"raw": str(o)})
 
+        # --- return full data ---
         return JSONResponse({"status": "success", "data": outputs}, status_code=200)
 
     except Exception as e:
@@ -289,9 +297,14 @@ async def execute_flow_metadata(
     except Exception as e:
         print("Error executing flow metadata:", e)
         import traceback
+
         traceback.print_exc()
         return JSONResponse(
-            {"status": "error", "message": "Failed to execute flow metadata", "detail": str(e)},
+            {
+                "status": "error",
+                "message": "Failed to execute flow metadata",
+                "detail": str(e),
+            },
             status_code=500,
         )
 
