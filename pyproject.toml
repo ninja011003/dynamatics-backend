@@ -10,5 +10,6 @@ dependencies = [
     "pymongo>=4.15.4",
     "python-dotenv>=1.2.1",
     "scalar-fastapi>=1.4.3",
+    "statsmodels>=0.14.5",
     "uvicorn>=0.38.0",
 ]
