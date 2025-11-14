@@ -7,6 +7,28 @@ from flow_graph.parser import Parser
 
 
 class PseudoRunner:
+    # Class-level cache for mock data schemas
+    _mock_data_schemas: Dict[str, Dict[str, str]] = None
+    
+    @classmethod
+    def _load_all_mock_data_schemas(cls) -> Dict[str, Dict[str, str]]:
+        """Load mock data schemas from static JSON file."""
+        if cls._mock_data_schemas is not None:
+            return cls._mock_data_schemas
+        
+        schemas_file = os.path.join(os.path.dirname(__file__), "mock_data_schemas.json")
+        
+        if not os.path.exists(schemas_file):
+            cls._mock_data_schemas = {}
+            return cls._mock_data_schemas
+        
+        try:
+            with open(schemas_file, 'r') as f:
+                cls._mock_data_schemas = json.load(f)
+        except Exception:
+            cls._mock_data_schemas = {}
+        
+        return cls._mock_data_schemas
     
     def __init__(self, flow_graph_dict: dict):
         self.raw_data = flow_graph_dict
@@ -16,6 +38,9 @@ class PseudoRunner:
         self.req_nodes = self.parser.req_nodes
         self.exec_order = self.parser.topo_sort()
         self.node_metadata = {}
+        
+        # Load all mock data schemas on initialization
+        self.mock_data_schemas = self._load_all_mock_data_schemas()
         
     def _infer_type(self, value: Any) -> str:
         if value is None:
@@ -43,35 +68,18 @@ class PseudoRunner:
         if isinstance(input_data, dict):
             return self._flatten_keys_with_types(input_data)
         elif isinstance(input_data, list) and len(input_data) > 0:
-            if isinstance(input_data[0], dict):
-                return self._flatten_keys_with_types(input_data[0])
-            return {}
+            # Collect columns from all items in the list
+            all_columns = {}
+            for item in input_data:
+                if isinstance(item, dict):
+                    item_columns = self._flatten_keys_with_types(item)
+                    all_columns.update(item_columns)
+            return all_columns if all_columns else {}
         elif isinstance(input_data, str):
-            return self._load_mock_data_columns(input_data)
+            # Use cached mock data schema
+            return self.mock_data_schemas.get(input_data, {})
         
         return {}
-    
-    def _load_mock_data_columns(self, filename: str) -> Dict[str, str]:
-        try:
-            file_path = os.path.join(
-                os.path.dirname(__file__), "mock_data", f"{filename}.ndjson"
-            )
-            if not os.path.exists(file_path):
-                return {}
-            
-            # Load all data to capture columns from all rows
-            df = pd.read_json(file_path, lines=True)
-            
-            # Collect all columns from all rows
-            all_columns = {}
-            for _, row in df.iterrows():
-                row_dict = row.to_dict()
-                row_columns = self._flatten_keys_with_types(row_dict)
-                all_columns.update(row_columns)
-            
-            return all_columns
-        except Exception:
-            return {}
     
     def _flatten_keys_with_types(self, data: dict, parent_key: str = "", sep: str = ".") -> Dict[str, str]:
         columns = {}
