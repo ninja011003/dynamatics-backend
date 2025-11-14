@@ -12,6 +12,8 @@ from flow_graph.runner import Runner
 
 from api.utils import generate_uid
 
+from flow_graph.pseudorunner import PseudoRunner
+
 router = APIRouter(
     prefix="/flows",
     tags=[APITags.FLOWS],
@@ -28,11 +30,9 @@ COLLECTION_NAME = "flows"
 @router.post("")
 async def create_flow(request: Request, db: Database = Depends(get_db)):
     try:
-        flow_uid = generate_uid("flow", 18)
         payload = await request.json()
-        payload["flow_uid"] = flow_uid
         db[COLLECTION_NAME].insert_one(payload)
-        return JSONResponse({"status": "success", "data": flow_uid})
+        return JSONResponse({"status": "success", "data": payload.get("flow_uid")})
     except Exception as e:
         print("Error creating flow :", e)
         return JSONResponse(
@@ -94,7 +94,7 @@ async def update_flow(request: Request, flow_uid: str, db: Database = Depends(ge
 @router.delete("/{flow_uid}")
 async def delete_flow(flow_uid: str, db: Database = Depends(get_db)):
     try:
-        result = db[COLLECTION_NAME].delete_one({"flow_uid": flow_uid})
+        result = db[COLLECTION_NAME].delete_many({"flow_uid": flow_uid})
         if result.deleted_count == 0:
             return JSONResponse(
                 {"status": "error", "message": "Flow not found"}, status_code=200
@@ -217,20 +217,28 @@ async def execute_flow_by_flow_uid(
             )
 
         flow_graph_dict = data.get("flow_graph", "")
+
         runner = Runner(flow_graph_dict)
 
-        if stream:
-            return StreamingResponse(
-                runner.execute(),
-                media_type="application/json",
-                status_code=200,
-            )
+        # --- Non-streaming mode ---
+        outputs_raw = list(runner.execute())
 
-        # If not streaming, collect all outputs into a list
-        outputs = list(runner.execute())
-        # Convert JSON strings back to Python objects
-        outputs = [json.loads(o) for o in outputs]
+        # Safely parse outputs
+        outputs = []
+        for o in outputs_raw:
+            if isinstance(o, dict):
+                outputs.append(o)
+            elif isinstance(o, str) and o.strip():
+                try:
+                    outputs.append(json.loads(o))
+                except json.JSONDecodeError:
+                    # fallback: store raw string
+                    outputs.append({"raw": o})
+            else:
+                # fallback for None or unexpected type
+                outputs.append({"raw": str(o)})
 
+        # --- return full data ---
         return JSONResponse({"status": "success", "data": outputs}, status_code=200)
 
     except Exception as e:
@@ -244,6 +252,61 @@ async def execute_flow_by_flow_uid(
 ################################################################################
 # Metadata Methods
 ################################################################################
+
+
+@router.post("/metadata/execute")
+async def execute_flow_metadata(
+    request: Request,
+    db: Database = Depends(get_db),
+    stream: bool = Query(default=False),
+):
+    try:
+        payload = await request.json()
+        flow_graph = payload.get("flow_graph")
+
+        if not flow_graph:
+            return JSONResponse(
+                {"status": "error", "message": "Flow graph is empty"},
+                status_code=200,
+            )
+
+        pseudo_runner = PseudoRunner(flow_graph)
+
+        if stream:
+            return StreamingResponse(
+                pseudo_runner.execute(),
+                media_type="application/json",
+                status_code=200,
+            )
+
+        outputs_raw = list(pseudo_runner.execute())
+        outputs = []
+        for o in outputs_raw:
+            if isinstance(o, dict):
+                outputs.append(o)
+            elif isinstance(o, str) and o.strip():
+                try:
+                    outputs.append(json.loads(o))
+                except json.JSONDecodeError:
+                    outputs.append({"raw": o})
+            else:
+                outputs.append({"raw": str(o)})
+
+        return JSONResponse({"status": "success", "data": outputs}, status_code=200)
+
+    except Exception as e:
+        print("Error executing flow metadata:", e)
+        import traceback
+
+        traceback.print_exc()
+        return JSONResponse(
+            {
+                "status": "error",
+                "message": "Failed to execute flow metadata",
+                "detail": str(e),
+            },
+            status_code=500,
+        )
 
 
 @router.get("/metadata/{dataset_name}")

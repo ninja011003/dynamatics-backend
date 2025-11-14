@@ -13,7 +13,7 @@ class Parser:
 
     def parse(self,flow:Dict):
 
-        print("\n\nflow : \n\n", flow)
+        # print("\n\nflow : \n\n", flow)
 
         for node in flow["nodes"]:
             self.nodes[node["id"]] = node
