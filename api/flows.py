@@ -30,11 +30,9 @@ COLLECTION_NAME = "flows"
 @router.post("")
 async def create_flow(request: Request, db: Database = Depends(get_db)):
     try:
-        flow_uid = generate_uid("flow", 18)
         payload = await request.json()
-        payload["flow_uid"] = flow_uid
         db[COLLECTION_NAME].insert_one(payload)
-        return JSONResponse({"status": "success", "data": flow_uid})
+        return JSONResponse({"status": "success", "data": payload.get("flow_uid")})
     except Exception as e:
         print("Error creating flow :", e)
         return JSONResponse(
@@ -96,7 +94,7 @@ async def update_flow(request: Request, flow_uid: str, db: Database = Depends(ge
 @router.delete("/{flow_uid}")
 async def delete_flow(flow_uid: str, db: Database = Depends(get_db)):
     try:
-        result = db[COLLECTION_NAME].delete_one({"flow_uid": flow_uid})
+        result = db[COLLECTION_NAME].delete_many({"flow_uid": flow_uid})
         if result.deleted_count == 0:
             return JSONResponse(
                 {"status": "error", "message": "Flow not found"}, status_code=200
