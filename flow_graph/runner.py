@@ -11,6 +11,7 @@ from flow_graph.sort import Sort
 from flow_graph.data_source import DataSource
 from flow_graph.export import Export
 from flow_graph.forecast import Forecast
+from flow_graph.anomaly import Anomaly
 
 func_map = {
     # always lowercase the key
@@ -20,6 +21,7 @@ func_map = {
     "filter": Filter,
     "group": Group,
     "sort": Sort,
+    "anomalydetection": Anomaly,
     "forecast": Forecast,
     "export": Export,
     "linechart": Export,
@@ -78,6 +80,7 @@ class Runner:
                 node = self.nodes[node_id]
                 type = node.get("type", "export").lower().strip()
                 _func = func_map[type]
+                print("type : ", type)
 
                 cur_process = None
 
@@ -121,6 +124,7 @@ class Runner:
                         self.req_nodes.get(node_id, [])[0]
                     ]
                     cur_process = _func(prev_node.output)
+                    print("run : ", node.get("config", {}))
                     cur_process.run(**node.get("config", {}))
 
                 self.executed_processes[node_id] = cur_process
@@ -146,6 +150,6 @@ class Runner:
 
             return prev_output
 
-        except Exception :
+        except Exception:
             # print(e)
             return prev_output
