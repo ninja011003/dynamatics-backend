@@ -12,6 +12,8 @@ from flow_graph.data_source import DataSource
 from flow_graph.export import Export
 from flow_graph.forecast import Forecast
 from flow_graph.anomaly import Anomaly
+from flow_graph.andNode import And
+from flow_graph.orNode import Or
 
 func_map = {
     # always lowercase the key
@@ -23,6 +25,8 @@ func_map = {
     "sort": Sort,
     "anomalydetection": Anomaly,
     "forecast": Forecast,
+    "and": And,
+    "or": Or,
     "export": Export,
     "linechart": Export,
     "barchart": Export,
@@ -94,6 +98,16 @@ class Runner:
                     df2 = self.executed_processes[self.req_nodes[node_id][1]].output
                     cur_process = _func(df1, df2)
                     cur_process.run(**node.get("config", {}))
+
+                elif _func in [And, Or]:
+                    prev_node_ids = self.req_nodes.get(node_id, [])
+                    if len(prev_node_ids) < 2:
+                        raise ValueError(f"{type.upper()} node requires at least 2 input filter nodes")
+                    
+                    filter_nodes = [self.executed_processes[prev_id] for prev_id in prev_node_ids]
+                    
+                    cur_process = _func(*filter_nodes)
+                    cur_process.run()
 
                 elif _func is Export:
                     prev_node = self.executed_processes[

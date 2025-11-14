@@ -21,20 +21,23 @@ class Filter:
     def __init__(self, input: pd.DataFrame):
         self.input = input
         self.output = None
+        self.mask = None
 
     def run(self, field: str, condition: str, value1, value2=None):
         if not field or not condition:
-            return self.input
+            self.mask = pd.Series([True] * len(self.input))
+            self.output = self.input
+            return self
         
         filter_func = Filters.get(condition)
         if not filter_func:
             raise ValueError(f"Invalid filter condition: {condition}")
         if value2:
-            mask = self.input[field].apply(lambda x: filter_func(x, value1, value2))
+            self.mask = self.input[field].apply(lambda x: filter_func(x, value1, value2))
         else:
-            mask = self.input[field].apply(lambda x: filter_func(x, value1))
-        self.output = self.input[mask].reset_index(drop=True)
-        return self.output
+            self.mask = self.input[field].apply(lambda x: filter_func(x, value1))
+        self.output = self.input[self.mask].reset_index(drop=True)
+        return self
 
 
 if __name__ == "__main__":

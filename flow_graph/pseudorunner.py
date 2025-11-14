@@ -191,6 +191,16 @@ class PseudoRunner:
         
         return result
     
+    def get_and_columns(self, input_columns_list: List[Dict[str, str]], config: dict) -> Dict[str, str]:
+        if not input_columns_list:
+            return {}
+        return input_columns_list[0].copy()
+    
+    def get_or_columns(self, input_columns_list: List[Dict[str, str]], config: dict) -> Dict[str, str]:
+        if not input_columns_list:
+            return {}
+        return input_columns_list[0].copy()
+    
     def get_export_columns(self, input_columns: Dict[str, str], config: dict) -> Dict[str, str]:
         return input_columns.copy()
     
@@ -212,6 +222,28 @@ class PseudoRunner:
                     if prev_nodes and prev_nodes[0] in self.node_metadata:
                         prev_columns = self.node_metadata[prev_nodes[0]]
                         columns = self.get_filter_columns(prev_columns, config)
+                
+                elif node_type == "and":
+                    prev_nodes = self.req_nodes.get(node_id, [])
+                    if prev_nodes:
+                        # Collect columns from all input filter nodes
+                        input_columns_list = []
+                        for prev_node_id in prev_nodes:
+                            if prev_node_id in self.node_metadata:
+                                input_columns_list.append(self.node_metadata[prev_node_id])
+                        if input_columns_list:
+                            columns = self.get_and_columns(input_columns_list, config)
+                
+                elif node_type == "or":
+                    prev_nodes = self.req_nodes.get(node_id, [])
+                    if prev_nodes:
+                        # Collect columns from all input filter nodes
+                        input_columns_list = []
+                        for prev_node_id in prev_nodes:
+                            if prev_node_id in self.node_metadata:
+                                input_columns_list.append(self.node_metadata[prev_node_id])
+                        if input_columns_list:
+                            columns = self.get_or_columns(input_columns_list, config)
                     
                 elif node_type == "sort":
                     prev_nodes = self.req_nodes.get(node_id, [])
@@ -258,6 +290,8 @@ class PseudoRunner:
         # Second pass: yield what each node receives from previous nodes
         for node_id in self.exec_order:
             try:
+                node = self.nodes[node_id]
+                node_type = node.get("type", "export").lower().strip()
                 prev_nodes = self.req_nodes.get(node_id, [])
                 
                 # Get input columns from previous node(s)
@@ -266,6 +300,7 @@ class PseudoRunner:
                     if len(prev_nodes) == 1 and prev_nodes[0] in self.node_metadata:
                         input_columns = self.node_metadata[prev_nodes[0]]
                     elif len(prev_nodes) >= 2:
+                        # For AND/OR nodes, they receive multiple inputs but operate on same schema
                         # For merge nodes, show both inputs
                         # For simplicity, we'll show the first input's columns
                         # (The actual merge logic combines them, but this shows what it receives)
@@ -279,6 +314,7 @@ class PseudoRunner:
 
 
 if __name__ == "__main__":
+    # Example 1: Basic flow
     sample_flow = {
         "nodes": [
             {
@@ -320,6 +356,57 @@ if __name__ == "__main__":
         ]
     }
     
+    print("Example 1: Basic flow")
+    print("-" * 80)
     runner = PseudoRunner(sample_flow)
     for output in runner.execute():
+        print(output, end='')
+    
+    # Example 2: Flow with AND/OR gates
+    gate_flow = {
+        "nodes": [
+            {
+                "id": "data",
+                "type": "datasource",
+                "config": {
+                    "input": [
+                        {"name": "Alice", "age": 25, "score": 85},
+                        {"name": "Bob", "age": 30, "score": 90}
+                    ]
+                }
+            },
+            {
+                "id": "filter_age",
+                "type": "filter",
+                "config": {"field": "age", "condition": "lt", "value1": 30}
+            },
+            {
+                "id": "filter_score",
+                "type": "filter",
+                "config": {"field": "score", "condition": "gte", "value1": 80}
+            },
+            {
+                "id": "and_node",
+                "type": "and",
+                "config": {}
+            },
+            {
+                "id": "export",
+                "type": "export",
+                "config": {}
+            }
+        ],
+        "edges": [
+            {"source": "data", "target": "filter_age"},
+            {"source": "data", "target": "filter_score"},
+            {"source": "filter_age", "target": "and_node"},
+            {"source": "filter_score", "target": "and_node"},
+            {"source": "and_node", "target": "export"}
+        ]
+    }
+    
+    print("\n\nExample 2: Flow with AND gate")
+    print("-" * 80)
+    runner2 = PseudoRunner(gate_flow)
+    for output in runner2.execute():
         print(output, end='')
